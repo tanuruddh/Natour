@@ -2,10 +2,19 @@ import express from "express";
 import reviewsController from "../controllers/reviewController.js";
 import authController from "../controllers/authController.js";
 
-const { getAllReviews, createReview } = reviewsController;
+const { getAllReviews, setTourUserId, createReview, deleteReview, updateReview, getReview } = reviewsController;
+const { protect, restrictTo } = authController;
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.route('/').get(getAllReviews).post(authController.protect, authController.restrictTo('user'), createReview);
+router.use(protect);
+router.route('/')
+    .get(getAllReviews)
+    .post(restrictTo('user'), setTourUserId, createReview);
+
+router.route('/:id')
+    .get(getReview)
+    .patch(restrictTo('user', 'admin'), updateReview)
+    .delete(restrictTo('user', 'admin'), deleteReview);
 
 export default router;

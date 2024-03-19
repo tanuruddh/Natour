@@ -3,22 +3,22 @@ import users from '../controllers/usersController.js';
 import authController from "../controllers/authController.js";
 
 const router = express.Router();
-const { getUsers, getUser, updateUser, postUser, deleteUser, updateMe, deleteMe } = users;
-const { signup, login, forgotPassword, protect, resetPassword, updatePassword } = authController;
+const { getUsers, getUser, updateUser, postUser, deleteUser, updateMe, deleteMe, getMe } = users;
+const { signup, login, forgotPassword, protect, resetPassword, updatePassword, restrictTo } = authController;
 
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
-
 router.patch('/resetPassword/:token', resetPassword);
 
-router.patch('/updateMyPassword', protect, updatePassword);
+router.use(protect);
 
+router.patch('/updateMyPassword', protect, updatePassword);
 router.patch('/updateMe', protect, updateMe);
 router.delete('/deleteMe', protect, deleteMe);
+router.get('/me', protect, getMe, getUser);
 
-
-
+router.use(restrictTo('admin'));
 
 router
   .route('/')

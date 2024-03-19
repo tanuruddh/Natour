@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import AppError from "../utils/appError.js"
 import catchAsync from "../utils/catchAsnyc.js"
+import factory from "./handlerFactory.js";
 
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
@@ -9,6 +10,11 @@ const filterObj = (obj, ...allowedFields) => {
     })
 
     return newObj;
+}
+
+const getMe = (req, res, next) => {
+    req.params.id = req.user.id;
+    next();
 }
 
 const updateMe = catchAsync(async (req, res, next) => {
@@ -36,47 +42,24 @@ const deleteMe = catchAsync(async (req, res, next) => {
     })
 });
 
-const getUsers = catchAsync(async (req, res) => {
-    const users = await User.find()
-
-
-    res.status(200).send({
-        status: "success",
-        data: {
-            users
-        }
-    })
-})
-const getUser = (req, res) => {
-    res.status(500).send({
-        status: "not found",
-        messsage: 'Invalid ID'
-    })
-}
-const updateUser = (req, res) => {
-    res.status(500).send({
-        status: "not found",
-        messsage: 'Invalid ID'
-    })
-}
 const postUser = (req, res) => {
     res.status(500).send({
         status: "not found",
         messsage: 'Invalid ID'
     })
 }
-const deleteUser = (req, res) => {
-    res.status(500).send({
-        status: "not found",
-        messsage: 'Invalid ID'
-    })
-}
+
+const getUsers = factory.getAll(User);
+const getUser = factory.getOne(User);
+const updateUser = factory.updateOne(User);
+const deleteUser = factory.deleteOne(User);
 export default {
     getUsers,
     getUser,
+    getMe,
     updateUser,
     postUser,
     deleteUser,
     updateMe,
-    deleteMe
+    deleteMe,
 }
